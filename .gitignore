@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ambiente Virtual
+venv/
+.venv/
+
+# Variáveis de Ambiente e Segredos (NUNCA SUBIR)
+.env
+*.env
+credentials.json
+token.json
+*.pem
+
+# VS Code
+.vscode/
