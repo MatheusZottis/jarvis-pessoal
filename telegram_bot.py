@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 import telebot
-import pyautogui  # <-- NOVA BIBLIOTECA AQUI
+import pyautogui
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -10,6 +10,7 @@ from tools.agenda import obter_proximos_eventos
 from tools.gmail import obter_ultimos_emails
 from tools.clima import obter_clima
 from tools.gerador_ppt import criar_apresentacao
+from tools.visao import ler_tela
 
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -45,10 +46,10 @@ def responder_jarvis(message):
     contexto_extra = ""
     pergunta_lower = pergunta.lower()
     
-    # 1. CONTROLE DE MÍDIA E VOLUME (NOVO)
+    # 1. CONTROLE DE MÍDIA E VOLUME
     if "volume" in pergunta_lower or "som" in pergunta_lower:
         if "aumenta" in pergunta_lower or "mais" in pergunta_lower or "sobe" in pergunta_lower:
-            pyautogui.press('volumeup', presses=10) # Aumenta 20%
+            pyautogui.press('volumeup', presses=10)
             contexto_extra += "\n\n[DADO DE SISTEMA: Volume do PC aumentado.]"
         elif "diminui" in pergunta_lower or "menos" in pergunta_lower or "baixa" in pergunta_lower:
             pyautogui.press('volumedown', presses=10)
@@ -102,6 +103,12 @@ def responder_jarvis(message):
             if nome_app in pergunta_lower:
                 os.system(f"start {comando_app}")
                 contexto_extra += f"\n\n[DADO DE SISTEMA: {nome_app} aberto.]"
+                
+    # 7. VISÃO COMPUTACIONAL (Olhos do Jarvis)
+    elif "tela" in pergunta_lower or "leia" in pergunta_lower or "olha" in pergunta_lower:
+        print("[ Jarvis acionando sensores ópticos na tela do PC... ]")
+        resultado_visao = ler_tela(pergunta)
+        contexto_extra += f"\n\n[DADO DE SISTEMA: O usuário pediu para você olhar a tela do PC dele. A análise da imagem retornou isso: {resultado_visao}]"
 
     mensagem_final = pergunta + contexto_extra
     historico.append(HumanMessage(content=mensagem_final))
